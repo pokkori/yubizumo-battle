@@ -61,7 +61,7 @@ export default function BattleGame() {
   }, [applyImpulse]);
 
   const shareText = state.winner
-    ? "🤼 指相撒バトルYUBIZUMOで" + (state.winner === 1 ? "🔴赤" : "🔵青") + "が勝利！\n3本先取の熱闘を制した！\n#YUBIZUMO #指相撒 #物理ゲーム\nhttps://yubizumo.vercel.app"
+    ? "🤼 指相撲バトルYUBIZUMOで" + (state.winner === 1 ? "🔴赤" : "🔵青") + "が勝利！\n3本先取の熱闘を制した！\n#YUBIZUMO #指相撲 #物理ゲーム\nhttps://yubizumo.vercel.app"
     : "";
   const shareUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText);
 
@@ -102,7 +102,7 @@ export default function BattleGame() {
             style={{ background: "rgba(0,0,0,0.75)" }}>
             <div className="text-6xl mb-4">🤼</div>
             <div className="text-2xl font-black mb-2" style={{ color: "#fca5a5" }}>
-              指相撒バトル
+              指相撲バトル
             </div>
             <p className="text-red-300 text-sm text-center px-8 mb-6">
               2人でスマホを挑んで<br />
