@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import { useSumoPhysics } from "@/hooks/useSumoPhysics";
+import { useGameSounds } from "@/hooks/useGameSounds";
 
 const CANVAS_W = 360;
 const CANVAS_H = 560;
@@ -9,6 +10,16 @@ const CANVAS_H = 560;
 export default function BattleGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { state, initRound, applyImpulse, resetMatch, p1TouchRef, p2TouchRef } = useSumoPhysics(canvasRef);
+  const { playStart, playRoundWin, playMatchWin } = useGameSounds();
+
+  useEffect(() => {
+    if (state.phase === "playing") playStart();
+  }, [state.phase]);
+
+  useEffect(() => {
+    if (state.phase === "roundOver") playRoundWin();
+    if (state.phase === "matchOver") playMatchWin();
+  }, [state.phase]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
