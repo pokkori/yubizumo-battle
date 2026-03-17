@@ -8,13 +8,13 @@ export default function HomePage() {
       {/* NEW: CPU mode banner */}
       <div className="w-full max-w-xs mb-6 p-3 rounded-xl text-center"
         style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.3), rgba(124,58,237,0.1))", border: "1px solid rgba(124,58,237,0.4)" }}>
-        <span className="text-lg">🤖</span>
+        <img src="/images/cpu.png" alt="" className="w-6 h-6 inline" />
         <span className="text-purple-300 text-sm font-bold ml-2">NEW! CPU対戦モード追加</span>
         <p className="text-purple-400 text-xs mt-1">1人でも楽しめるようになりました！</p>
       </div>
 
       <div className="text-center mb-8">
-        <div className="text-8xl mb-3" style={{ filter: "drop-shadow(0 0 24px rgba(220,38,38,0.7))" }}>🤼</div>
+        <img src="/images/player1.png" alt="力士" className="w-28 h-28 mx-auto mb-3" style={{ filter: "drop-shadow(0 0 24px rgba(220,38,38,0.7))" }} />
         <h1 className="text-4xl font-black mb-1"
           style={{ color: "#fca5a5", textShadow: "0 0 20px rgba(220,38,38,0.6)" }}>
           指相撲バトル

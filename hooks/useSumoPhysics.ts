@@ -28,6 +28,15 @@ const CPU_PARAMS: Record<CpuDifficulty, { interval: number; force: number; accur
   hard:   { interval: 300, force: 16, accuracy: 0.9, reactionDelay: 80  },
 };
 
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(img); // fallback: draw broken image gracefully
+    img.src = src;
+  });
+}
+
 export function useSumoPhysics(canvasRef: React.RefObject<HTMLCanvasElement | null>) {
   const [state, setState] = useState<SumoState>({
     phase: "ready", p1Score: 0, p2Score: 0, winner: null, roundWinner: null,
@@ -41,6 +50,8 @@ export function useSumoPhysics(canvasRef: React.RefObject<HTMLCanvasElement | nu
   const cpuIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const p1TouchRef = useRef<{ id: number; startX: number; startY: number } | null>(null);
   const p2TouchRef = useRef<{ id: number; startX: number; startY: number } | null>(null);
+  const p1ImgRef = useRef<HTMLImageElement | null>(null);
+  const p2ImgRef = useRef<HTMLImageElement | null>(null);
 
   const endRoundRef = useRef<(winner: 1 | 2) => void>(() => {});
 
@@ -158,6 +169,15 @@ export function useSumoPhysics(canvasRef: React.RefObject<HTMLCanvasElement | nu
       startCpuAI(cpuDifficulty);
     }
 
+    // Load wrestler images
+    if (!p1ImgRef.current) {
+      loadImage("/images/player1.png").then(img => { p1ImgRef.current = img; });
+    }
+    if (!p2ImgRef.current) {
+      const src = cpuDifficulty ? "/images/cpu.png" : "/images/player2.png";
+      loadImage(src).then(img => { p2ImgRef.current = img; });
+    }
+
     const draw = () => {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
@@ -214,10 +234,14 @@ export function useSumoPhysics(canvasRef: React.RefObject<HTMLCanvasElement | nu
       ctx.fillStyle = "#dc2626";
       ctx.fill();
       ctx.shadowBlur = 0;
-      ctx.font = (WRESTLER_R * 1.1) + "px serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText("🔴", 0, 0);
+      if (p1ImgRef.current?.complete && p1ImgRef.current.naturalWidth > 0) {
+        ctx.drawImage(p1ImgRef.current, -WRESTLER_R, -WRESTLER_R, WRESTLER_R * 2, WRESTLER_R * 2);
+      } else {
+        ctx.font = (WRESTLER_R * 1.1) + "px serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("\u{1F534}", 0, 0);
+      }
       ctx.restore();
 
       const p2pos = p2.position;
@@ -231,10 +255,14 @@ export function useSumoPhysics(canvasRef: React.RefObject<HTMLCanvasElement | nu
       ctx.fillStyle = "#2563eb";
       ctx.fill();
       ctx.shadowBlur = 0;
-      ctx.font = (WRESTLER_R * 1.1) + "px serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText("🔵", 0, 0);
+      if (p2ImgRef.current?.complete && p2ImgRef.current.naturalWidth > 0) {
+        ctx.drawImage(p2ImgRef.current, -WRESTLER_R, -WRESTLER_R, WRESTLER_R * 2, WRESTLER_R * 2);
+      } else {
+        ctx.font = (WRESTLER_R * 1.1) + "px serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("\u{1F535}", 0, 0);
+      }
       ctx.restore();
 
       ctx.fillStyle = "#dc2626";
@@ -288,6 +316,7 @@ export function useSumoPhysics(canvasRef: React.RefObject<HTMLCanvasElement | nu
 
   const resetMatch = useCallback(() => {
     stopCpu();
+    p2ImgRef.current = null; // Reset so correct image loads next round (CPU vs P2)
     const next: SumoState = { phase: "ready", p1Score: 0, p2Score: 0, winner: null, roundWinner: null };
     stateRef.current = next;
     setState({ ...next });

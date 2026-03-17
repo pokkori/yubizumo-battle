@@ -210,7 +210,7 @@ export default function BattleGame() {
     return (
       <div className="flex flex-col items-center justify-center min-h-dvh px-4"
         style={{ background: "linear-gradient(160deg,#1a0505,#3d0f0f)" }}>
-        <div className="text-7xl mb-4" style={{ filter: "drop-shadow(0 0 20px rgba(220,38,38,0.6))" }}>🤼</div>
+        <img src="/images/player1.png" alt="力士" className="w-24 h-24 mb-4 mx-auto" style={{ filter: "drop-shadow(0 0 20px rgba(220,38,38,0.6))" }} />
         <h2 className="text-3xl font-black mb-2" style={{ color: "#fca5a5" }}>指相撲バトル</h2>
         <p className="text-red-400 text-sm mb-8">モードを選んでください</p>
 
@@ -218,7 +218,7 @@ export default function BattleGame() {
           <button onClick={() => setGameMode("difficulty")}
             className="w-full py-5 rounded-2xl font-black text-xl text-white transition-all active:scale-95"
             style={{ background: "linear-gradient(135deg,#7c3aed,#4c1d95)", boxShadow: "0 0 24px rgba(124,58,237,0.4)" }}>
-            <span className="text-3xl block mb-1">🤖</span>
+            <img src="/images/cpu.png" alt="CPU" className="w-10 h-10 mx-auto mb-1" />
             1人 vs CPU
             <span className="block text-xs font-normal mt-1 text-purple-200">コンピューターと対戦</span>
           </button>
@@ -226,7 +226,7 @@ export default function BattleGame() {
           <button onClick={() => startGame(false)}
             className="w-full py-5 rounded-2xl font-black text-xl text-white transition-all active:scale-95"
             style={{ background: "linear-gradient(135deg,#dc2626,#7f1d1d)", boxShadow: "0 0 24px rgba(220,38,38,0.4)" }}>
-            <span className="text-3xl block mb-1">👥</span>
+            <span className="flex justify-center gap-1 mb-1"><img src="/images/player1.png" alt="P1" className="w-8 h-8" /><img src="/images/player2.png" alt="P2" className="w-8 h-8" /></span>
             2人対戦
             <span className="block text-xs font-normal mt-1 text-red-200">スマホを囲んで対戦</span>
           </button>
@@ -268,7 +268,7 @@ export default function BattleGame() {
     return (
       <div className="flex flex-col items-center justify-center min-h-dvh px-4"
         style={{ background: "linear-gradient(160deg,#1a0505,#3d0f0f)" }}>
-        <div className="text-6xl mb-3">🤖</div>
+        <img src="/images/cpu.png" alt="CPU" className="w-20 h-20 mx-auto mb-3" />
         <h2 className="text-2xl font-black mb-2" style={{ color: "#fca5a5" }}>CPUの強さ</h2>
         <p className="text-red-400 text-sm mb-8">難易度を選んでください</p>
 
@@ -310,8 +310,8 @@ export default function BattleGame() {
 
       <div className="w-full max-w-sm flex items-center justify-between px-3 py-2">
         <button onClick={handleResetMatch} className="text-red-500 text-sm">← モード選択</button>
-        <span className="font-black text-lg" style={{ color: "#fca5a5" }}>
-          {isCpu ? "🤖 vs CPU" : "🤼 YUBIZUMO"}
+        <span className="font-black text-lg flex items-center gap-1" style={{ color: "#fca5a5" }}>
+          {isCpu ? <><img src="/images/cpu.png" alt="" className="w-6 h-6 inline" /> vs CPU</> : <><img src="/images/player1.png" alt="" className="w-6 h-6 inline" /> YUBIZUMO</>}
         </span>
         <div className="text-sm text-red-400">
           {state.p1Score} - {state.p2Score}
@@ -322,13 +322,13 @@ export default function BattleGame() {
         <div className="text-center py-1 text-xs font-bold"
           style={{ color: isCpu ? "#a78bfa" : "#60a5fa", transform: isCpu ? "none" : "rotate(180deg)" }}>
           {isCpu ? (
-            <span>
-              🤖 CPU（{diffLabel}）
+            <span className="inline-flex items-center gap-1">
+              <img src="/images/cpu.png" alt="" className="w-5 h-5 inline" /> CPU（{diffLabel}）
               {state.phase === "fighting" && (
                 <span className="cpu-think-bubble ml-1 text-purple-400"> ...考え中</span>
               )}
             </span>
-          ) : "🔵 P2 — ↑方向にスワイプで押す"}
+          ) : <span className="inline-flex items-center gap-1"><img src="/images/player2.png" alt="" className="w-5 h-5 inline" /> P2 — ↑方向にスワイプで押す</span>}
         </div>
       </div>
 
@@ -348,7 +348,7 @@ export default function BattleGame() {
         {state.phase === "ready" && (
           <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl"
             style={{ background: "rgba(0,0,0,0.75)" }}>
-            <div className="text-6xl mb-4">{isCpu ? "🤖" : "🤼"}</div>
+            {isCpu ? <img src="/images/cpu.png" alt="" className="w-20 h-20 mx-auto mb-4" /> : <img src="/images/player1.png" alt="" className="w-20 h-20 mx-auto mb-4" />}
             <div className="text-2xl font-black mb-2" style={{ color: "#fca5a5" }}>
               {isCpu ? "vs CPU（" + diffLabel + "）" : "指相撲バトル"}
             </div>
@@ -369,7 +369,7 @@ export default function BattleGame() {
         {state.phase === "roundOver" && (
           <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bounce-in"
             style={{ background: "rgba(0,0,0,0.8)" }}>
-            <div className="text-5xl mb-3">{state.roundWinner === 1 ? "🔴" : isCpu ? "🤖" : "🔵"}</div>
+            <img src={state.roundWinner === 1 ? "/images/player1.png" : isCpu ? "/images/cpu.png" : "/images/player2.png"} alt="" className="w-16 h-16 mx-auto mb-3" />
             <div className="text-2xl font-black mb-1" style={{ color: state.roundWinner === 1 ? "#dc2626" : isCpu ? "#a78bfa" : "#3b82f6" }}>
               {isCpu
                 ? (state.roundWinner === 1 ? "あなたの勝ち！" : "CPUの勝ち...")
@@ -390,12 +390,17 @@ export default function BattleGame() {
         {state.phase === "matchOver" && (
           <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bounce-in"
             style={{ background: "rgba(0,0,0,0.85)" }}>
-            <div className="text-6xl mb-3">{state.winner === 1 ? "🏆" : isCpu ? "😔" : "🏆"}</div>
+            {state.winner === 1
+              ? <img src="/images/player1.png" alt="" className="w-20 h-20 mx-auto mb-3" style={{ filter: "drop-shadow(0 0 12px gold)" }} />
+              : isCpu
+                ? <img src="/images/cpu.png" alt="" className="w-20 h-20 mx-auto mb-3 opacity-60" />
+                : <img src="/images/player2.png" alt="" className="w-20 h-20 mx-auto mb-3" style={{ filter: "drop-shadow(0 0 12px gold)" }} />
+            }
             <div className="text-3xl font-black mb-1"
               style={{ color: state.winner === 1 ? "#dc2626" : isCpu ? "#a78bfa" : "#3b82f6" }}>
               {isCpu
                 ? (state.winner === 1 ? "あなたの優勝！" : "CPUの勝ち...")
-                : (state.winner === 1 ? "🔴 P1" : "🔵 P2") + " 優勝！"
+                : (state.winner === 1 ? "P1" : "P2") + " 優勝！"
               }
             </div>
             {state.winner === 1 && <div className="text-amber-300 text-lg mb-1 font-bold">横綱認定！</div>}
@@ -438,7 +443,7 @@ export default function BattleGame() {
 
       <div className="w-full max-w-sm pb-2">
         <div className="text-center py-1 text-xs text-red-400 font-bold">
-          🔴 {isCpu ? "あなた" : "P1"} — ↑方向にスワイプで押す
+          <span className="inline-flex items-center gap-1"><img src="/images/player1.png" alt="" className="w-4 h-4 inline" /> {isCpu ? "あなた" : "P1"} — ↑方向にスワイプで押す</span>
         </div>
       </div>
     </div>
