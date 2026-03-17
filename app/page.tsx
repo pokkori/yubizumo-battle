@@ -5,6 +5,14 @@ export default function HomePage() {
     <div className="min-h-dvh flex flex-col items-center justify-center px-4 py-10"
       style={{ background: "linear-gradient(160deg, #1a0505 0%, #3d0f0f 50%, #1a0505 100%)" }}>
 
+      {/* NEW: CPU mode banner */}
+      <div className="w-full max-w-xs mb-6 p-3 rounded-xl text-center"
+        style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.3), rgba(124,58,237,0.1))", border: "1px solid rgba(124,58,237,0.4)" }}>
+        <span className="text-lg">🤖</span>
+        <span className="text-purple-300 text-sm font-bold ml-2">NEW! CPU対戦モード追加</span>
+        <p className="text-purple-400 text-xs mt-1">1人でも楽しめるようになりました！</p>
+      </div>
+
       <div className="text-center mb-8">
         <div className="text-8xl mb-3" style={{ filter: "drop-shadow(0 0 24px rgba(220,38,38,0.7))" }}>🤼</div>
         <h1 className="text-4xl font-black mb-1"
@@ -12,7 +20,7 @@ export default function HomePage() {
           指相撲バトル
         </h1>
         <p className="text-red-300 text-lg font-bold mb-1">YUBIZUMO</p>
-        <p className="text-red-600 text-sm">2人でスマホを囲んで指1本で戦え！</p>
+        <p className="text-red-600 text-sm">1人でも2人でも！指1本で物理相撲バトル</p>
       </div>
 
       <Link href="/game"
@@ -27,7 +35,8 @@ export default function HomePage() {
 
       <div className="w-full max-w-xs space-y-3">
         {[
-          { icon: "📱", title: "2人でスマホを囲む", desc: "左右に向き合って画面を持つ" },
+          { icon: "🤖", title: "1人でCPU対戦", desc: "難易度3段階！よわい・ふつう・つよい" },
+          { icon: "👥", title: "2人でスマホを囲む", desc: "左右に向き合って画面を持つ" },
           { icon: "👆", title: "自分の力士をスワイプ", desc: "画面の自分側エリアをフリックで操作" },
           { icon: "⚡", title: "相手を俵の外に押し出す", desc: "土俵から出たら負け！3本先取" },
           { icon: "📤", title: "勝者はXでシェア", desc: "「横綱に勝った！」を友達に自慢" },
@@ -43,7 +52,7 @@ export default function HomePage() {
         ))}
       </div>
       <footer className="mt-10 text-center text-xs text-red-900 pb-6">
-        <p>© 2026 ポッコリラボ</p>
+        <p>&copy; 2026 ポッコリラボ</p>
         <p className="mt-1">
           <a href="https://twitter.com/levona_design" className="underline hover:text-red-700">お問い合わせ: X @levona_design</a>
         </p>

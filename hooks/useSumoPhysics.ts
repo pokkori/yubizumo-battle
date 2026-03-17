@@ -3,6 +3,7 @@
 import { useRef, useCallback, useState } from "react";
 
 export type MatchPhase = "ready" | "fighting" | "roundOver" | "matchOver";
+export type CpuDifficulty = "easy" | "normal" | "hard";
 
 export interface SumoState {
   phase: MatchPhase;
@@ -20,6 +21,13 @@ const DOHYO_R = 130;
 const WRESTLER_R = 32;
 const WINNING_SCORE = 3;
 
+// CPU difficulty parameters
+const CPU_PARAMS: Record<CpuDifficulty, { interval: number; force: number; accuracy: number; reactionDelay: number }> = {
+  easy:   { interval: 800, force: 8,  accuracy: 0.4, reactionDelay: 400 },
+  normal: { interval: 500, force: 12, accuracy: 0.7, reactionDelay: 200 },
+  hard:   { interval: 300, force: 16, accuracy: 0.9, reactionDelay: 80  },
+};
+
 export function useSumoPhysics(canvasRef: React.RefObject<HTMLCanvasElement | null>) {
   const [state, setState] = useState<SumoState>({
     phase: "ready", p1Score: 0, p2Score: 0, winner: null, roundWinner: null,
@@ -30,10 +38,18 @@ export function useSumoPhysics(canvasRef: React.RefObject<HTMLCanvasElement | nu
   const p1Ref = useRef<import("matter-js").Body | null>(null);
   const p2Ref = useRef<import("matter-js").Body | null>(null);
   const rafRef = useRef<number>(0);
+  const cpuIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const p1TouchRef = useRef<{ id: number; startX: number; startY: number } | null>(null);
   const p2TouchRef = useRef<{ id: number; startX: number; startY: number } | null>(null);
 
   const endRoundRef = useRef<(winner: 1 | 2) => void>(() => {});
+
+  const stopCpu = useCallback(() => {
+    if (cpuIntervalRef.current) {
+      clearInterval(cpuIntervalRef.current);
+      cpuIntervalRef.current = null;
+    }
+  }, []);
 
   const endRound = useCallback((winner: 1 | 2) => {
     if (stateRef.current.phase !== "fighting") return;
@@ -49,21 +65,64 @@ export function useSumoPhysics(canvasRef: React.RefObject<HTMLCanvasElement | nu
     };
     stateRef.current = next;
     setState({ ...next });
+    stopCpu();
     if (runnerRef.current) {
       import("matter-js").then(Matter => {
         if (runnerRef.current) Matter.Runner.stop(runnerRef.current);
       });
     }
     cancelAnimationFrame(rafRef.current);
-  }, []);
+  }, [stopCpu]);
 
   endRoundRef.current = endRound;
 
-  const initRound = useCallback(async () => {
+  const startCpuAI = useCallback(async (difficulty: CpuDifficulty) => {
+    const Matter = await import("matter-js");
+    const params = CPU_PARAMS[difficulty];
+
+    // Initial reaction delay before CPU starts acting
+    await new Promise(r => setTimeout(r, params.reactionDelay));
+
+    cpuIntervalRef.current = setInterval(() => {
+      if (stateRef.current.phase !== "fighting") return;
+      const p1 = p1Ref.current;
+      const p2 = p2Ref.current;
+      if (!p1 || !p2) return;
+
+      // CPU controls P2 (blue, top)
+      const dx = p1.position.x - p2.position.x;
+      const dy = p1.position.y - p2.position.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 0.1) return;
+
+      // Add randomness based on accuracy (lower accuracy = more random)
+      const randomAngle = (1 - params.accuracy) * (Math.random() - 0.5) * Math.PI;
+      const baseAngle = Math.atan2(dy, dx);
+      const finalAngle = baseAngle + randomAngle;
+
+      // Strategic: if CPU is near edge, retreat toward center
+      const cpuDistFromCenter = Math.hypot(p2.position.x - DOHYO_CX, p2.position.y - DOHYO_CY);
+      let targetAngle = finalAngle;
+      if (cpuDistFromCenter > DOHYO_R * 0.65) {
+        // Blend toward center
+        const toCenterAngle = Math.atan2(DOHYO_CY - p2.position.y, DOHYO_CX - p2.position.x);
+        targetAngle = finalAngle * 0.4 + toCenterAngle * 0.6;
+      }
+
+      const forceScale = params.force * (0.8 + Math.random() * 0.4);
+      Matter.Body.setVelocity(p2, {
+        x: p2.velocity.x + Math.cos(targetAngle) * forceScale * 0.4,
+        y: p2.velocity.y + Math.sin(targetAngle) * forceScale * 0.4,
+      });
+    }, params.interval);
+  }, []);
+
+  const initRound = useCallback(async (cpuDifficulty?: CpuDifficulty) => {
     const Matter = await import("matter-js");
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    stopCpu();
     if (runnerRef.current) {
       Matter.Runner.stop(runnerRef.current);
     }
@@ -93,6 +152,11 @@ export function useSumoPhysics(canvasRef: React.RefObject<HTMLCanvasElement | nu
     const nextState: SumoState = { ...stateRef.current, phase: "fighting", roundWinner: null };
     stateRef.current = nextState;
     setState({ ...nextState });
+
+    // Start CPU AI if in CPU mode
+    if (cpuDifficulty) {
+      startCpuAI(cpuDifficulty);
+    }
 
     const draw = () => {
       const ctx = canvas.getContext("2d");
@@ -206,7 +270,7 @@ export function useSumoPhysics(canvasRef: React.RefObject<HTMLCanvasElement | nu
     };
 
     rafRef.current = requestAnimationFrame(draw);
-  }, [canvasRef]);
+  }, [canvasRef, stopCpu, startCpuAI]);
 
   const applyImpulse = useCallback(async (player: 1 | 2, vx: number, vy: number) => {
     if (stateRef.current.phase !== "fighting") return;
@@ -223,6 +287,7 @@ export function useSumoPhysics(canvasRef: React.RefObject<HTMLCanvasElement | nu
   }, []);
 
   const resetMatch = useCallback(() => {
+    stopCpu();
     const next: SumoState = { phase: "ready", p1Score: 0, p2Score: 0, winner: null, roundWinner: null };
     stateRef.current = next;
     setState({ ...next });
@@ -232,7 +297,7 @@ export function useSumoPhysics(canvasRef: React.RefObject<HTMLCanvasElement | nu
         if (runnerRef.current) Matter.Runner.stop(runnerRef.current);
       });
     }
-  }, []);
+  }, [stopCpu]);
 
   return { state, initRound, applyImpulse, resetMatch, p1TouchRef, p2TouchRef };
 }
