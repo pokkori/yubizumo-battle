@@ -13,7 +13,7 @@ export default function BattleGame() {
   const { playStart, playRoundWin, playMatchWin } = useGameSounds();
 
   useEffect(() => {
-    if (state.phase === "playing") playStart();
+    if (state.phase === "fighting") playStart();
   }, [state.phase]);
 
   useEffect(() => {
