@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback, useEffect, useState } from "react";
+import { useRef, useCallback, useEffect, useState, useMemo } from "react";
 import { useSumoPhysics, CpuDifficulty } from "@/hooks/useSumoPhysics";
 import { useGameSounds } from "@/hooks/useGameSounds";
 
@@ -8,6 +8,67 @@ const CANVAS_W = 360;
 const CANVAS_H = 560;
 
 type GameMode = "select" | "difficulty" | "playing";
+
+interface BattleStats {
+  wins: number;
+  losses: number;
+  byDifficulty: Record<CpuDifficulty, { wins: number; losses: number }>;
+}
+
+const STATS_KEY = "yubizumo_stats";
+
+function loadStats(): BattleStats {
+  try {
+    const raw = localStorage.getItem(STATS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch { /* ignore */ }
+  return {
+    wins: 0, losses: 0,
+    byDifficulty: {
+      easy: { wins: 0, losses: 0 },
+      normal: { wins: 0, losses: 0 },
+      hard: { wins: 0, losses: 0 },
+    },
+  };
+}
+
+function saveStats(stats: BattleStats) {
+  try { localStorage.setItem(STATS_KEY, JSON.stringify(stats)); } catch { /* ignore */ }
+}
+
+const CONFETTI_COLORS = ["#dc2626", "#f59e0b", "#22c55e", "#3b82f6", "#a855f7", "#ec4899", "#fbbf24"];
+
+function Confetti() {
+  const pieces = useMemo(() =>
+    Array.from({ length: 40 }, (_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      delay: Math.random() * 1.5,
+      duration: 2 + Math.random() * 1.5,
+      color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+      size: 6 + Math.random() * 8,
+      rotation: Math.random() * 360,
+    })), []);
+
+  return (
+    <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 100 }}>
+      {pieces.map(p => (
+        <div key={p.id} className="confetti-piece"
+          style={{
+            left: `${p.left}%`,
+            width: `${p.size}px`,
+            height: `${p.size * 0.6}px`,
+            background: p.color,
+            borderRadius: "2px",
+            animationDelay: `${p.delay}s`,
+            animationDuration: `${p.duration}s`,
+            transform: `rotate(${p.rotation}deg)`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 const DIFFICULTY_OPTIONS: { key: CpuDifficulty; label: string; desc: string; color: string }[] = [
   { key: "easy",   label: "よわい", desc: "のんびり相撲", color: "#22c55e" },
@@ -23,6 +84,11 @@ export default function BattleGame() {
   const [gameMode, setGameMode] = useState<GameMode>("select");
   const [isCpu, setIsCpu] = useState(false);
   const [cpuDifficulty, setCpuDifficulty] = useState<CpuDifficulty>("normal");
+  const [stats, setStats] = useState<BattleStats | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  // Load stats on mount
+  useEffect(() => { setStats(loadStats()); }, []);
 
   useEffect(() => {
     if (state.phase === "fighting") playStart();
@@ -30,7 +96,27 @@ export default function BattleGame() {
 
   useEffect(() => {
     if (state.phase === "roundOver") playRoundWin();
-    if (state.phase === "matchOver") playMatchWin();
+    if (state.phase === "matchOver") {
+      playMatchWin();
+      // Record stats for CPU mode
+      if (isCpu && state.winner) {
+        setStats(prev => {
+          const s = prev ? { ...prev } : loadStats();
+          const won = state.winner === 1;
+          if (won) { s.wins++; } else { s.losses++; }
+          s.byDifficulty = { ...s.byDifficulty };
+          s.byDifficulty[cpuDifficulty] = { ...s.byDifficulty[cpuDifficulty] };
+          if (won) { s.byDifficulty[cpuDifficulty].wins++; } else { s.byDifficulty[cpuDifficulty].losses++; }
+          saveStats(s);
+          return s;
+        });
+      }
+      // Show confetti on win
+      if (state.winner === 1 || !isCpu) {
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 3000);
+      }
+    }
   }, [state.phase]);
 
   const startGame = useCallback((cpu: boolean, difficulty?: CpuDifficulty) => {
@@ -48,6 +134,7 @@ export default function BattleGame() {
     resetMatch();
     setGameMode("select");
     setIsCpu(false);
+    setShowConfetti(false);
   }, [resetMatch]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
@@ -59,7 +146,6 @@ export default function BattleGame() {
           p1TouchRef.current = { id: touch.identifier, startX: touch.clientX, startY: touch.clientY };
         }
       } else {
-        // In CPU mode, ignore touches on P2's side
         if (isCpu) return;
         if (!p2TouchRef.current) {
           p2TouchRef.current = { id: touch.identifier, startX: touch.clientX, startY: touch.clientY };
@@ -92,7 +178,6 @@ export default function BattleGame() {
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     const relY = e.clientY / window.innerHeight;
     const player = relY > 0.5 ? 1 : 2;
-    // In CPU mode, only allow P1 (bottom half)
     if (isCpu && player === 2) return;
     mouseStartRef.current = { x: e.clientX, y: e.clientY, player };
   }, [isCpu]);
@@ -105,14 +190,20 @@ export default function BattleGame() {
     mouseStartRef.current = null;
   }, [applyImpulse]);
 
+  const diffLabel = DIFFICULTY_OPTIONS.find(d => d.key === cpuDifficulty)?.label ?? cpuDifficulty;
+
   const shareText = state.winner
     ? isCpu
       ? state.winner === 1
-        ? "🤼 指相撲バトルYUBIZUMOでCPU（" + cpuDifficulty + "）に勝利！\n横綱の座を勝ち取った！\n#YUBIZUMO #指相撲 #物理ゲーム\nhttps://yubizumo.vercel.app"
-        : "🤼 指相撲バトルYUBIZUMOでCPU（" + cpuDifficulty + "）に敗北...\nリベンジだ！\n#YUBIZUMO #指相撲 #物理ゲーム\nhttps://yubizumo.vercel.app"
+        ? "🤼 指相撲バトルYUBIZUMOでCPU（" + diffLabel + "）に勝利！\n横綱の座を勝ち取った！\n#YUBIZUMO #指相撲 #物理ゲーム\nhttps://yubizumo.vercel.app"
+        : "🤼 指相撲バトルYUBIZUMOでCPU（" + diffLabel + "）に敗北...\nリベンジだ！\n#YUBIZUMO #指相撲 #物理ゲーム\nhttps://yubizumo.vercel.app"
       : "🤼 指相撲バトルYUBIZUMOで" + (state.winner === 1 ? "🔴赤" : "🔵青") + "が勝利！\n3本先取の熱闘を制した！\n#YUBIZUMO #指相撲 #物理ゲーム\nhttps://yubizumo.vercel.app"
     : "";
   const shareUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText);
+
+  const winRate = stats && (stats.wins + stats.losses) > 0
+    ? Math.round((stats.wins / (stats.wins + stats.losses)) * 100)
+    : null;
 
   // Mode selection screen
   if (gameMode === "select") {
@@ -141,7 +232,33 @@ export default function BattleGame() {
           </button>
         </div>
 
-        <a href="/" className="mt-8 text-red-600 text-sm underline">トップに戻る</a>
+        {/* Stats display */}
+        {stats && (stats.wins + stats.losses) > 0 && (
+          <div className="mt-6 p-3 rounded-xl w-full max-w-xs text-center"
+            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}>
+            <div className="text-xs text-red-400 mb-1">CPU対戦 通算成績</div>
+            <div className="text-lg font-black text-white">
+              {stats.wins}勝 {stats.losses}敗
+              <span className="text-sm ml-2" style={{ color: winRate !== null && winRate >= 50 ? "#22c55e" : "#ef4444" }}>
+                （勝率{winRate}%）
+              </span>
+            </div>
+            <div className="flex justify-center gap-3 mt-1 text-xs">
+              {(["easy", "normal", "hard"] as CpuDifficulty[]).map(d => {
+                const dd = stats.byDifficulty[d];
+                const total = dd.wins + dd.losses;
+                if (total === 0) return null;
+                return (
+                  <span key={d} className="text-red-300">
+                    {DIFFICULTY_OPTIONS.find(o => o.key === d)?.label}: {dd.wins}勝{dd.losses}敗
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        <a href="/" className="mt-6 text-red-600 text-sm underline">トップに戻る</a>
       </div>
     );
   }
@@ -156,15 +273,24 @@ export default function BattleGame() {
         <p className="text-red-400 text-sm mb-8">難易度を選んでください</p>
 
         <div className="space-y-3 w-full max-w-xs">
-          {DIFFICULTY_OPTIONS.map(opt => (
-            <button key={opt.key}
-              onClick={() => startGame(true, opt.key)}
-              className="w-full py-4 rounded-2xl font-black text-lg text-white transition-all active:scale-95"
-              style={{ background: `linear-gradient(135deg,${opt.color},${opt.color}88)`, boxShadow: `0 0 20px ${opt.color}44` }}>
-              {opt.label}
-              <span className="block text-xs font-normal mt-1 opacity-80">{opt.desc}</span>
-            </button>
-          ))}
+          {DIFFICULTY_OPTIONS.map(opt => {
+            const dd = stats?.byDifficulty[opt.key];
+            const total = dd ? dd.wins + dd.losses : 0;
+            return (
+              <button key={opt.key}
+                onClick={() => startGame(true, opt.key)}
+                className="w-full py-4 rounded-2xl font-black text-lg text-white transition-all active:scale-95"
+                style={{ background: `linear-gradient(135deg,${opt.color},${opt.color}88)`, boxShadow: `0 0 20px ${opt.color}44` }}>
+                {opt.label}
+                <span className="block text-xs font-normal mt-1 opacity-80">{opt.desc}</span>
+                {total > 0 && (
+                  <span className="block text-xs font-normal mt-0.5 opacity-60">
+                    戦績: {dd!.wins}勝{dd!.losses}敗
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
 
         <button onClick={() => setGameMode("select")}
@@ -180,6 +306,8 @@ export default function BattleGame() {
     <div className="flex flex-col items-center min-h-dvh"
       style={{ background: "linear-gradient(160deg,#1a0505,#3d0f0f)" }}>
 
+      {showConfetti && <Confetti />}
+
       <div className="w-full max-w-sm flex items-center justify-between px-3 py-2">
         <button onClick={handleResetMatch} className="text-red-500 text-sm">← モード選択</button>
         <span className="font-black text-lg" style={{ color: "#fca5a5" }}>
@@ -193,7 +321,14 @@ export default function BattleGame() {
       <div className="w-full max-w-sm">
         <div className="text-center py-1 text-xs font-bold"
           style={{ color: isCpu ? "#a78bfa" : "#60a5fa", transform: isCpu ? "none" : "rotate(180deg)" }}>
-          {isCpu ? "🤖 CPU" : "🔵 P2 — ↑方向にスワイプで押す"}
+          {isCpu ? (
+            <span>
+              🤖 CPU（{diffLabel}）
+              {state.phase === "fighting" && (
+                <span className="cpu-think-bubble ml-1 text-purple-400"> ...考え中</span>
+              )}
+            </span>
+          ) : "🔵 P2 — ↑方向にスワイプで押す"}
         </div>
       </div>
 
@@ -215,7 +350,7 @@ export default function BattleGame() {
             style={{ background: "rgba(0,0,0,0.75)" }}>
             <div className="text-6xl mb-4">{isCpu ? "🤖" : "🤼"}</div>
             <div className="text-2xl font-black mb-2" style={{ color: "#fca5a5" }}>
-              {isCpu ? "vs CPU（" + DIFFICULTY_OPTIONS.find(d => d.key === cpuDifficulty)?.label + "）" : "指相撲バトル"}
+              {isCpu ? "vs CPU（" + diffLabel + "）" : "指相撲バトル"}
             </div>
             <p className="text-red-300 text-sm text-center px-8 mb-6">
               {isCpu
@@ -265,9 +400,18 @@ export default function BattleGame() {
             </div>
             {state.winner === 1 && <div className="text-amber-300 text-lg mb-1 font-bold">横綱認定！</div>}
             {isCpu && state.winner === 2 && <div className="text-purple-300 text-sm mb-1">もう一度挑戦しよう！</div>}
-            <div className="text-white text-xl font-black mb-5">
+            <div className="text-white text-xl font-black mb-2">
               {state.p1Score} - {state.p2Score}
             </div>
+
+            {/* Stats on result screen */}
+            {isCpu && stats && (stats.wins + stats.losses) > 0 && (
+              <div className="text-xs text-red-300 mb-4">
+                通算成績: {stats.wins}勝 {stats.losses}敗
+                （勝率{Math.round((stats.wins / (stats.wins + stats.losses)) * 100)}%）
+              </div>
+            )}
+
             <div className="space-y-2 w-48">
               <button onClick={handleStartRound}
                 className="w-full py-3 rounded-xl font-bold text-white text-sm transition-all active:scale-95"
