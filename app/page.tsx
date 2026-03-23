@@ -24,7 +24,8 @@ export default function HomePage() {
       </div>
 
       <Link href="/game"
-        className="inline-block px-14 py-4 rounded-2xl text-xl font-black mb-8 transition-all active:scale-95"
+        className="inline-block px-14 py-4 rounded-2xl text-xl font-black mb-8 transition-all active:scale-95 min-h-[44px]"
+        aria-label="指相撲バトルゲームを開始する"
         style={{
           background: "linear-gradient(135deg, #dc2626, #7f1d1d)",
           color: "#fff",
@@ -54,7 +55,7 @@ export default function HomePage() {
       <footer className="mt-10 text-center text-xs text-red-900 pb-6">
         <p>&copy; 2026 ポッコリラボ</p>
         <p className="mt-1">
-          <a href="https://twitter.com/levona_design" className="underline hover:text-red-700">お問い合わせ: X @levona_design</a>
+          <a href="https://twitter.com/levona_design" className="underline hover:text-red-700" aria-label="Xでお問い合わせ（@levona_design）">お問い合わせ: X @levona_design</a>
         </p>
       </footer>
     </div>

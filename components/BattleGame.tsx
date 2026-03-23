@@ -260,7 +260,7 @@ export default function BattleGame() {
           </div>
         )}
 
-        <a href="/" className="mt-6 text-red-600 text-sm underline">トップに戻る</a>
+        <a href="/" className="mt-6 text-red-600 text-sm underline min-h-[44px] inline-flex items-center" aria-label="トップページに戻る">トップに戻る</a>
       </div>
     );
   }
@@ -439,7 +439,8 @@ export default function BattleGame() {
                 モード選択に戻る
               </button>
               <a href={shareUrl} target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full py-2 rounded-xl text-sm font-bold"
+                aria-label="Xで対戦結果をシェアする"
+                className="flex items-center justify-center gap-2 w-full py-2 rounded-xl text-sm font-bold min-h-[44px]"
                 style={{ background: "#000", color: "#fff" }}>
                 <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
