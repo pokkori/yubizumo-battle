@@ -3,6 +3,7 @@
 import { useRef, useCallback, useEffect, useState, useMemo } from "react";
 import { useSumoPhysics, CpuDifficulty } from "@/hooks/useSumoPhysics";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import { updateStreak, loadStreak, getStreakMilestoneMessage, type StreakData } from "@/lib/streak";
 
 const CANVAS_W = 360;
 const CANVAS_H = 560;
@@ -86,9 +87,13 @@ export default function BattleGame() {
   const [cpuDifficulty, setCpuDifficulty] = useState<CpuDifficulty>("normal");
   const [stats, setStats] = useState<BattleStats | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [streakData, setStreakData] = useState<StreakData | null>(null);
 
   // Load stats on mount
-  useEffect(() => { setStats(loadStats()); }, []);
+  useEffect(() => {
+    setStats(loadStats());
+    setStreakData(loadStreak("yubizumo"));
+  }, []);
 
   useEffect(() => {
     if (state.phase === "fighting") playStart();
@@ -116,6 +121,9 @@ export default function BattleGame() {
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 3000);
       }
+      // Update streak on match end
+      const updated = updateStreak("yubizumo");
+      setStreakData(updated);
     }
   }, [state.phase]);
 
@@ -233,6 +241,17 @@ export default function BattleGame() {
             <span className="block text-xs font-normal mt-1 text-red-200">スマホを囲んで対戦</span>
           </button>
         </div>
+
+        {/* Streak display */}
+        {streakData && streakData.count > 0 && (
+          <div className="mt-4 px-4 py-2 rounded-xl w-full max-w-xs text-center"
+            style={{ background: "rgba(220,38,38,0.15)", border: "1px solid rgba(220,38,38,0.3)" }}>
+            <p className="text-red-300 font-bold text-sm">{streakData.count}日連続プレイ中</p>
+            {getStreakMilestoneMessage(streakData.count) && (
+              <p className="text-yellow-400 text-xs mt-0.5">{getStreakMilestoneMessage(streakData.count)}</p>
+            )}
+          </div>
+        )}
 
         {/* Stats display */}
         {stats && (stats.wins + stats.losses) > 0 && (
