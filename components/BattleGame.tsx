@@ -216,7 +216,8 @@ export default function BattleGame() {
 
         <div className="space-y-4 w-full max-w-xs">
           <button onClick={() => setGameMode("difficulty")}
-            className="w-full py-5 rounded-2xl font-black text-xl text-white transition-all active:scale-95"
+            className="w-full py-5 rounded-2xl font-black text-xl text-white transition-all active:scale-95 min-h-[44px]"
+            aria-label="1人でCPUと対戦するモードを選ぶ"
             style={{ background: "linear-gradient(135deg,#7c3aed,#4c1d95)", boxShadow: "0 0 24px rgba(124,58,237,0.4)" }}>
             <img src="/images/cpu.png" alt="CPU" className="w-10 h-10 mx-auto mb-1" />
             1人 vs CPU
@@ -224,7 +225,8 @@ export default function BattleGame() {
           </button>
 
           <button onClick={() => startGame(false)}
-            className="w-full py-5 rounded-2xl font-black text-xl text-white transition-all active:scale-95"
+            className="w-full py-5 rounded-2xl font-black text-xl text-white transition-all active:scale-95 min-h-[44px]"
+            aria-label="2人で対戦するモードを開始する"
             style={{ background: "linear-gradient(135deg,#dc2626,#7f1d1d)", boxShadow: "0 0 24px rgba(220,38,38,0.4)" }}>
             <span className="flex justify-center gap-1 mb-1"><img src="/images/player1.png" alt="P1" className="w-8 h-8" /><img src="/images/player2.png" alt="P2" className="w-8 h-8" /></span>
             2人対戦
@@ -279,7 +281,8 @@ export default function BattleGame() {
             return (
               <button key={opt.key}
                 onClick={() => startGame(true, opt.key)}
-                className="w-full py-4 rounded-2xl font-black text-lg text-white transition-all active:scale-95"
+                className="w-full py-4 rounded-2xl font-black text-lg text-white transition-all active:scale-95 min-h-[44px]"
+                aria-label={`CPU難易度「${opt.label}」で対戦開始 — ${opt.desc}`}
                 style={{ background: `linear-gradient(135deg,${opt.color},${opt.color}88)`, boxShadow: `0 0 20px ${opt.color}44` }}>
                 {opt.label}
                 <span className="block text-xs font-normal mt-1 opacity-80">{opt.desc}</span>
@@ -294,7 +297,8 @@ export default function BattleGame() {
         </div>
 
         <button onClick={() => setGameMode("select")}
-          className="mt-6 text-red-500 text-sm underline">
+          className="mt-6 text-red-500 text-sm underline min-h-[44px] px-4"
+          aria-label="モード選択画面に戻る">
           戻る
         </button>
       </div>
@@ -309,7 +313,7 @@ export default function BattleGame() {
       {showConfetti && <Confetti />}
 
       <div className="w-full max-w-sm flex items-center justify-between px-3 py-2">
-        <button onClick={handleResetMatch} className="text-red-500 text-sm">← モード選択</button>
+        <button onClick={handleResetMatch} className="text-red-500 text-sm min-h-[44px] px-2" aria-label="モード選択画面に戻る">← モード選択</button>
         <span className="font-black text-lg flex items-center gap-1" style={{ color: "#fca5a5" }}>
           {isCpu ? <><img src="/images/cpu.png" alt="" className="w-6 h-6 inline" /> vs CPU</> : <><img src="/images/player1.png" alt="" className="w-6 h-6 inline" /> YUBIZUMO</>}
         </span>
@@ -338,6 +342,8 @@ export default function BattleGame() {
           width={CANVAS_W}
           height={CANVAS_H}
           className="w-full rounded-2xl"
+          role="img"
+          aria-label="指相撲バトルゲームキャンバス — スワイプして力士を操作する"
           style={{ touchAction: "none", cursor: "crosshair", maxHeight: "75dvh", objectFit: "contain" }}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
@@ -359,7 +365,8 @@ export default function BattleGame() {
               }
             </p>
             <button onClick={handleStartRound}
-              className="px-12 py-3 rounded-xl font-black text-white text-lg transition-all active:scale-95"
+              className="px-12 py-3 rounded-xl font-black text-white text-lg transition-all active:scale-95 min-h-[44px]"
+              aria-label="対戦を開始する"
               style={{ background: isCpu ? "linear-gradient(135deg,#7c3aed,#4c1d95)" : "linear-gradient(135deg,#dc2626,#7f1d1d)", boxShadow: isCpu ? "0 0 20px rgba(124,58,237,0.4)" : "0 0 20px rgba(220,38,38,0.4)" }}>
               対戦開始！
             </button>
@@ -380,7 +387,8 @@ export default function BattleGame() {
               {state.p1Score} - {state.p2Score}
             </div>
             <button onClick={handleStartRound}
-              className="px-10 py-3 rounded-xl font-bold text-white transition-all active:scale-95"
+              className="px-10 py-3 rounded-xl font-bold text-white transition-all active:scale-95 min-h-[44px]"
+              aria-label="次の一番を開始する"
               style={{ background: "linear-gradient(135deg,#dc2626,#7f1d1d)" }}>
               次の一番 →
             </button>
@@ -419,12 +427,14 @@ export default function BattleGame() {
 
             <div className="space-y-2 w-48">
               <button onClick={handleStartRound}
-                className="w-full py-3 rounded-xl font-bold text-white text-sm transition-all active:scale-95"
+                className="w-full py-3 rounded-xl font-bold text-white text-sm transition-all active:scale-95 min-h-[44px]"
+                aria-label="もう一度対戦する"
                 style={{ background: "linear-gradient(135deg,#dc2626,#7f1d1d)" }}>
                 もう一度対戦
               </button>
               <button onClick={handleResetMatch}
-                className="w-full py-2 rounded-xl font-bold text-sm transition-all active:scale-95"
+                className="w-full py-2 rounded-xl font-bold text-sm transition-all active:scale-95 min-h-[44px]"
+                aria-label="モード選択画面に戻る"
                 style={{ background: "rgba(255,255,255,0.1)", color: "#fca5a5" }}>
                 モード選択に戻る
               </button>
