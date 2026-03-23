@@ -25,13 +25,14 @@ export default function HomePage() {
 
       {/* NEW: CPU mode banner */}
       <div className="w-full max-w-xs mb-6 p-3 rounded-xl text-center"
-        style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.3), rgba(124,58,237,0.1))", border: "1px solid rgba(124,58,237,0.4)" }}>
+        style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.3), rgba(124,58,237,0.1))", border: "1px solid rgba(124,58,237,0.4)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
         <img src="/images/cpu.png" alt="" className="w-6 h-6 inline" />
         <span className="text-purple-300 text-sm font-bold ml-2">NEW! CPU対戦モード追加</span>
         <p className="text-purple-400 text-xs mt-1">1人でも楽しめるようになりました！</p>
       </div>
 
-      <div className="text-center mb-8">
+      <div className="text-center mb-8 p-6 rounded-3xl"
+        style={{ background: "rgba(220,38,38,0.07)", border: "1px solid rgba(220,38,38,0.18)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
         <img src="/images/player1.png" alt="力士" className="w-28 h-28 mx-auto mb-3" style={{ filter: "drop-shadow(0 0 24px rgba(220,38,38,0.7))" }} />
         <h1 className="text-4xl font-black mb-1"
           style={{ color: "#fca5a5", textShadow: "0 0 20px rgba(220,38,38,0.6)" }}>
@@ -41,7 +42,12 @@ export default function HomePage() {
         <p className="text-red-600 text-sm">1人でも2人でも！指1本で物理相撲バトル</p>
       </div>
 
-      {streak > 1 && <div className="text-center text-sm text-orange-400 mb-4">🔥 {streak}日連続プレイ中!</div>}
+      {streak > 1 && (
+        <div className="text-center text-sm text-orange-400 mb-4 px-4 py-2 rounded-full"
+          style={{ background: "rgba(251,146,60,0.12)", border: "1px solid rgba(251,146,60,0.3)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" }}>
+          {streak}日連続プレイ中!
+        </div>
+      )}
 
       <Link href="/game"
         className="inline-block px-14 py-4 rounded-2xl text-xl font-black mb-8 transition-all active:scale-95 min-h-[44px]"
@@ -63,7 +69,7 @@ export default function HomePage() {
           { icon: "📤", title: "勝者はXでシェア", desc: "「横綱に勝った！」を友達に自慢" },
         ].map((item, i) => (
           <div key={i} className="flex gap-3 items-center p-3 rounded-xl"
-            style={{ background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.25)" }}>
+            style={{ background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.25)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
             <span className="text-2xl">{item.icon}</span>
             <div>
               <div className="font-bold text-red-200 text-sm">{item.title}</div>
@@ -72,7 +78,8 @@ export default function HomePage() {
           </div>
         ))}
       </div>
-      <footer className="mt-10 text-center text-xs text-red-900 pb-6">
+      <footer className="mt-10 text-center text-xs text-red-900 pb-6 w-full max-w-xs px-4 py-4 rounded-2xl"
+        style={{ background: "rgba(220,38,38,0.05)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" }}>
         <p>&copy; 2026 ポッコリラボ</p>
         <p className="mt-1">
           <a href="https://twitter.com/levona_design" className="underline hover:text-red-700" aria-label="Xでお問い合わせ（@levona_design）">お問い合わせ: X @levona_design</a>
