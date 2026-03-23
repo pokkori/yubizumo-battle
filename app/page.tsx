@@ -1,6 +1,24 @@
+"use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 export default function HomePage() {
+  const [streak, setStreak] = useState(0);
+  useEffect(() => {
+    const today = new Date().toDateString();
+    const data = JSON.parse(localStorage.getItem('yubizumo_streak') || '{"count":0,"last":""}');
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    if (data.last === today) setStreak(data.count);
+    else if (data.last === yesterday) {
+      const updated = { count: data.count + 1, last: today };
+      localStorage.setItem('yubizumo_streak', JSON.stringify(updated));
+      setStreak(updated.count);
+    } else {
+      const updated = { count: 1, last: today };
+      localStorage.setItem('yubizumo_streak', JSON.stringify(updated));
+      setStreak(1);
+    }
+  }, []);
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center px-4 py-10"
       style={{ background: "linear-gradient(160deg, #1a0505 0%, #3d0f0f 50%, #1a0505 100%)" }}>
@@ -22,6 +40,8 @@ export default function HomePage() {
         <p className="text-red-300 text-lg font-bold mb-1">YUBIZUMO</p>
         <p className="text-red-600 text-sm">1人でも2人でも！指1本で物理相撲バトル</p>
       </div>
+
+      {streak > 1 && <div className="text-center text-sm text-orange-400 mb-4">🔥 {streak}日連続プレイ中!</div>}
 
       <Link href="/game"
         className="inline-block px-14 py-4 rounded-2xl text-xl font-black mb-8 transition-all active:scale-95 min-h-[44px]"

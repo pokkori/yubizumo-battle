@@ -25,6 +25,25 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "VideoGame",
+  "name": "指相撲バトル",
+  "description": "スマホで2人対戦する指相撲ゲーム",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Web",
+  "url": "https://yubizumo-battle.vercel.app",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" },
+  "genre": "Action Game"
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <html lang="ja"><body>{children}</body></html>;
+  return (
+    <html lang="ja">
+      <head>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
 }
