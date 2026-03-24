@@ -203,9 +203,9 @@ export default function BattleGame() {
   const shareText = state.winner
     ? isCpu
       ? state.winner === 1
-        ? "🤼 指相撲バトルYUBIZUMOでCPU（" + diffLabel + "）に勝利！\n横綱の座を勝ち取った！\n#YUBIZUMO #指相撲 #物理ゲーム\nhttps://yubizumo.vercel.app"
-        : "🤼 指相撲バトルYUBIZUMOでCPU（" + diffLabel + "）に敗北...\nリベンジだ！\n#YUBIZUMO #指相撲 #物理ゲーム\nhttps://yubizumo.vercel.app"
-      : "🤼 指相撲バトルYUBIZUMOで" + (state.winner === 1 ? "🔴赤" : "🔵青") + "が勝利！\n3本先取の熱闘を制した！\n#YUBIZUMO #指相撲 #物理ゲーム\nhttps://yubizumo.vercel.app"
+        ? " 指相撲バトルYUBIZUMOでCPU（" + diffLabel + "）に勝利！\n横綱の座を勝ち取った！\n#YUBIZUMO #指相撲 #物理ゲーム\nhttps://yubizumo-battle.vercel.app"
+        : " 指相撲バトルYUBIZUMOでCPU（" + diffLabel + "）に敗北...\nリベンジだ！\n#YUBIZUMO #指相撲 #物理ゲーム\nhttps://yubizumo-battle.vercel.app"
+      : " 指相撲バトルYUBIZUMOで" + (state.winner === 1 ? "赤" : "青") + "が勝利！\n3本先取の熱闘を制した！\n#YUBIZUMO #指相撲 #物理ゲーム\nhttps://yubizumo-battle.vercel.app"
     : "";
   const shareUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText);
 

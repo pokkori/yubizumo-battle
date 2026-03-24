@@ -57,16 +57,16 @@ export default function HomePage() {
           color: "#fff",
           boxShadow: "0 0 30px rgba(220,38,38,0.5)",
         }}>
-        対戦スタート 🤼
+        対戦スタート 
       </Link>
 
       <div className="w-full max-w-xs space-y-3">
         {[
-          { icon: "🤖", title: "1人でCPU対戦", desc: "難易度3段階！よわい・ふつう・つよい" },
-          { icon: "👥", title: "2人でスマホを囲む", desc: "左右に向き合って画面を持つ" },
-          { icon: "👆", title: "自分の力士をスワイプ", desc: "画面の自分側エリアをフリックで操作" },
-          { icon: "⚡", title: "相手を俵の外に押し出す", desc: "土俵から出たら負け！3本先取" },
-          { icon: "📤", title: "勝者はXでシェア", desc: "「横綱に勝った！」を友達に自慢" },
+          { icon: "", title: "1人でCPU対戦", desc: "難易度3段階！よわい・ふつう・つよい" },
+          { icon: "", title: "2人でスマホを囲む", desc: "左右に向き合って画面を持つ" },
+          { icon: "", title: "自分の力士をスワイプ", desc: "画面の自分側エリアをフリックで操作" },
+          { icon: "", title: "相手を俵の外に押し出す", desc: "土俵から出たら負け！3本先取" },
+          { icon: "", title: "勝者はXでシェア", desc: "「横綱に勝った！」を友達に自慢" },
         ].map((item, i) => (
           <div key={i} className="flex gap-3 items-center p-3 rounded-xl"
             style={{ background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.25)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
@@ -85,8 +85,8 @@ export default function HomePage() {
           <a href="https://twitter.com/levona_design" className="underline hover:text-red-700" aria-label="Xでお問い合わせ（@levona_design）">お問い合わせ: X @levona_design</a>
         </p>
         <div className="mt-2 space-x-4">
-          <a href="/privacy" className="underline hover:text-red-700" aria-label="プライバシーポリシーを見る">プライバシーポリシー</a>
-          <a href="/legal" className="underline hover:text-red-700" aria-label="特定商取引法に基づく表記を見る">特商法表記</a>
+          <a href="/privacy" aria-label="プライバシーポリシーを見る" className="underline hover:text-red-700" >プライバシーポリシー</a>
+          <a href="/legal" aria-label="特定商取引法に基づく表示" className="underline hover:text-red-700" >特商法表記</a>
         </div>
       </footer>
     </div>

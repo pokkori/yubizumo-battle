@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "🤼 指相撲バトル YUBIZUMO | 2人対戦物理相撲";
+export const alt = " 指相撲バトル YUBIZUMO | 2人対戦物理相撲";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -20,7 +20,7 @@ export default function Image() {
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ fontSize: 120, marginBottom: 20, filter: "drop-shadow(0 0 40px rgba(220,38,38,0.8))" }}>🤼</div>
+        <div style={{ fontSize: 120, marginBottom: 20, filter: "drop-shadow(0 0 40px rgba(220,38,38,0.8))" }}></div>
         <div style={{ fontSize: 72, fontWeight: 900, color: "#fca5a5", marginBottom: 12, textShadow: "0 0 30px rgba(220,38,38,0.6)" }}>
           指相撲バトル
         </div>

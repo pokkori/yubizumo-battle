@@ -269,7 +269,7 @@ export function useSumoPhysics(canvasRef: React.RefObject<HTMLCanvasElement | nu
       ctx.font = "bold 18px system-ui";
       ctx.textAlign = "left";
       ctx.textBaseline = "bottom";
-      ctx.fillText("🔴 " + stateRef.current.p1Score, 12, CANVAS_H - 8);
+      ctx.fillText(" " + stateRef.current.p1Score, 12, CANVAS_H - 8);
 
       ctx.save();
       ctx.translate(CANVAS_W, 0);
@@ -278,7 +278,7 @@ export function useSumoPhysics(canvasRef: React.RefObject<HTMLCanvasElement | nu
       ctx.font = "bold 18px system-ui";
       ctx.textAlign = "left";
       ctx.textBaseline = "bottom";
-      ctx.fillText("🔵 " + stateRef.current.p2Score, 12, CANVAS_H - 8);
+      ctx.fillText(" " + stateRef.current.p2Score, 12, CANVAS_H - 8);
       ctx.restore();
 
       if (stateRef.current.phase === "fighting") {

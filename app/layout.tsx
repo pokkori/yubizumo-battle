@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-const SITE_URL = "https://yubizumo.vercel.app";
+const SITE_URL = "https://yubizumo-battle.vercel.app";
 
 export const metadata: Metadata = {
   title: "指相撲バトル YUBIZUMO | 1人でもCPU対戦・2人対戦の物理相撲",

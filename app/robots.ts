@@ -3,6 +3,6 @@ import { MetadataRoute } from 'next';
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: { userAgent: '*', allow: '/' },
-    sitemap: 'https://yubizumo.vercel.app/sitemap.xml',
+    sitemap: 'https://yubizumo-battle.vercel.app/sitemap.xml',
   };
 }
