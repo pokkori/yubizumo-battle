@@ -185,8 +185,9 @@ export function useSumoPhysics(canvasRef: React.RefObject<HTMLCanvasElement | nu
       ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
 
       const bg = ctx.createRadialGradient(DOHYO_CX, DOHYO_CY, 0, DOHYO_CX, DOHYO_CY, CANVAS_H * 0.8);
-      bg.addColorStop(0, "#3d0f0f");
-      bg.addColorStop(1, "#1a0505");
+      bg.addColorStop(0, "#2d1a1a");
+      bg.addColorStop(0.5, "#1a0808");
+      bg.addColorStop(1, "#0a0202");
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
 
@@ -237,10 +238,25 @@ export function useSumoPhysics(canvasRef: React.RefObject<HTMLCanvasElement | nu
       if (p1ImgRef.current?.complete && p1ImgRef.current.naturalWidth > 0) {
         ctx.drawImage(p1ImgRef.current, -WRESTLER_R, -WRESTLER_R, WRESTLER_R * 2, WRESTLER_R * 2);
       } else {
-        ctx.font = (WRESTLER_R * 1.1) + "px serif";
+        // SVG-style fallback: gradient circle with inner highlight
+        const p1Grad = ctx.createRadialGradient(-6, -6, 0, 0, 0, WRESTLER_R);
+        p1Grad.addColorStop(0, "#ff6b6b");
+        p1Grad.addColorStop(1, "#b91c1c");
+        ctx.beginPath();
+        ctx.arc(0, 0, WRESTLER_R * 0.85, 0, Math.PI * 2);
+        ctx.fillStyle = p1Grad;
+        ctx.fill();
+        // Inner highlight
+        ctx.beginPath();
+        ctx.arc(-6, -8, WRESTLER_R * 0.3, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255,255,255,0.3)";
+        ctx.fill();
+        // Label
+        ctx.font = "bold " + (WRESTLER_R * 0.7) + "px system-ui";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText("\u{1F534}", 0, 0);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillText("P1", 0, 2);
       }
       ctx.restore();
 
@@ -258,10 +274,25 @@ export function useSumoPhysics(canvasRef: React.RefObject<HTMLCanvasElement | nu
       if (p2ImgRef.current?.complete && p2ImgRef.current.naturalWidth > 0) {
         ctx.drawImage(p2ImgRef.current, -WRESTLER_R, -WRESTLER_R, WRESTLER_R * 2, WRESTLER_R * 2);
       } else {
-        ctx.font = (WRESTLER_R * 1.1) + "px serif";
+        // SVG-style fallback: gradient circle with inner highlight
+        const p2Grad = ctx.createRadialGradient(-6, -6, 0, 0, 0, WRESTLER_R);
+        p2Grad.addColorStop(0, "#60a5fa");
+        p2Grad.addColorStop(1, "#1e40af");
+        ctx.beginPath();
+        ctx.arc(0, 0, WRESTLER_R * 0.85, 0, Math.PI * 2);
+        ctx.fillStyle = p2Grad;
+        ctx.fill();
+        // Inner highlight
+        ctx.beginPath();
+        ctx.arc(-6, -8, WRESTLER_R * 0.3, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255,255,255,0.3)";
+        ctx.fill();
+        // Label
+        ctx.font = "bold " + (WRESTLER_R * 0.7) + "px system-ui";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText("\u{1F535}", 0, 0);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillText("P2", 0, 2);
       }
       ctx.restore();
 

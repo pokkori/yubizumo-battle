@@ -203,9 +203,9 @@ export default function BattleGame() {
   const shareText = state.winner
     ? isCpu
       ? state.winner === 1
-        ? " 指相撲バトルYUBIZUMOでCPU（" + diffLabel + "）に勝利！\n横綱の座を勝ち取った！\n#YUBIZUMO #指相撲 #物理ゲーム\nhttps://yubizumo-battle.vercel.app"
-        : " 指相撲バトルYUBIZUMOでCPU（" + diffLabel + "）に敗北...\nリベンジだ！\n#YUBIZUMO #指相撲 #物理ゲーム\nhttps://yubizumo-battle.vercel.app"
-      : " 指相撲バトルYUBIZUMOで" + (state.winner === 1 ? "赤" : "青") + "が勝利！\n3本先取の熱闘を制した！\n#YUBIZUMO #指相撲 #物理ゲーム\nhttps://yubizumo-battle.vercel.app"
+        ? "指相撲バトルYUBIZUMOでCPU（" + diffLabel + "）に勝利!\n横綱の座を勝ち取った!\n#YUBIZUMO #指相撲 #物理ゲーム\nhttps://yubizumo-battle.vercel.app"
+        : "指相撲バトルYUBIZUMOでCPU（" + diffLabel + "）に敗北...\nリベンジだ!\n#YUBIZUMO #指相撲 #物理ゲーム\nhttps://yubizumo-battle.vercel.app"
+      : "指相撲バトルYUBIZUMOで" + (state.winner === 1 ? "赤" : "青") + "が勝利!\n3本先取の熱闘を制した!\n#YUBIZUMO #指相撲 #物理ゲーム\nhttps://yubizumo-battle.vercel.app"
     : "";
   const shareUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText);
 
@@ -224,7 +224,7 @@ export default function BattleGame() {
 
         <div className="space-y-4 w-full max-w-xs">
           <button onClick={() => setGameMode("difficulty")}
-            className="w-full py-5 rounded-2xl font-black text-xl text-white transition-all active:scale-95 min-h-[44px]"
+            className="w-full py-5 rounded-2xl font-black text-xl text-slate-100 transition-all active:scale-[0.97] min-h-[44px]"
             aria-label="1人でCPUと対戦するモードを選ぶ"
             style={{ background: "linear-gradient(135deg,#7c3aed,#4c1d95)", boxShadow: "0 0 24px rgba(124,58,237,0.4)" }}>
             <img src="/images/cpu.png" alt="CPU" className="w-10 h-10 mx-auto mb-1" />
@@ -233,7 +233,7 @@ export default function BattleGame() {
           </button>
 
           <button onClick={() => startGame(false)}
-            className="w-full py-5 rounded-2xl font-black text-xl text-white transition-all active:scale-95 min-h-[44px]"
+            className="w-full py-5 rounded-2xl font-black text-xl text-slate-100 transition-all active:scale-[0.97] min-h-[44px]"
             aria-label="2人で対戦するモードを開始する"
             style={{ background: "linear-gradient(135deg,#dc2626,#7f1d1d)", boxShadow: "0 0 24px rgba(220,38,38,0.4)" }}>
             <span className="flex justify-center gap-1 mb-1"><img src="/images/player1.png" alt="P1" className="w-8 h-8" /><img src="/images/player2.png" alt="P2" className="w-8 h-8" /></span>
@@ -245,8 +245,8 @@ export default function BattleGame() {
         {/* Streak display */}
         {streakData && streakData.count > 0 && (
           <div className="mt-4 px-4 py-2 rounded-xl w-full max-w-xs text-center"
-            style={{ background: "rgba(220,38,38,0.15)", border: "1px solid rgba(220,38,38,0.3)" }}>
-            <p className="text-red-300 font-bold text-sm">{streakData.count}日連続プレイ中</p>
+            style={{ background: "rgba(255,255,255,0.03)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.08)" }}>
+            <p className="text-slate-200 font-bold text-sm">{streakData.count}日連続プレイ中</p>
             {getStreakMilestoneMessage(streakData.count) && (
               <p className="text-yellow-400 text-xs mt-0.5">{getStreakMilestoneMessage(streakData.count)}</p>
             )}
@@ -256,8 +256,8 @@ export default function BattleGame() {
         {/* Stats display */}
         {stats && (stats.wins + stats.losses) > 0 && (
           <div className="mt-6 p-3 rounded-xl w-full max-w-xs text-center"
-            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}>
-            <div className="text-xs text-red-400 mb-1">CPU対戦 通算成績</div>
+            style={{ background: "rgba(255,255,255,0.03)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.08)" }}>
+            <div className="text-xs text-slate-300 mb-1">CPU対戦 通算成績</div>
             <div className="text-lg font-black text-white">
               {stats.wins}勝 {stats.losses}敗
               <span className="text-sm ml-2" style={{ color: winRate !== null && winRate >= 50 ? "#22c55e" : "#ef4444" }}>
@@ -300,7 +300,7 @@ export default function BattleGame() {
             return (
               <button key={opt.key}
                 onClick={() => startGame(true, opt.key)}
-                className="w-full py-4 rounded-2xl font-black text-lg text-white transition-all active:scale-95 min-h-[44px]"
+                className="w-full py-4 rounded-2xl font-black text-lg text-slate-100 transition-all active:scale-[0.97] min-h-[44px]"
                 aria-label={`CPU難易度「${opt.label}」で対戦開始 — ${opt.desc}`}
                 style={{ background: `linear-gradient(135deg,${opt.color},${opt.color}88)`, boxShadow: `0 0 20px ${opt.color}44` }}>
                 {opt.label}
@@ -372,51 +372,50 @@ export default function BattleGame() {
 
         {state.phase === "ready" && (
           <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl"
-            style={{ background: "rgba(0,0,0,0.75)" }}>
+            style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(16px)" }}>
             {isCpu ? <img src="/images/cpu.png" alt="" className="w-20 h-20 mx-auto mb-4" /> : <img src="/images/player1.png" alt="" className="w-20 h-20 mx-auto mb-4" />}
-            <div className="text-2xl font-black mb-2" style={{ color: "#fca5a5" }}>
+            <div className="text-2xl font-black mb-2 text-slate-100">
               {isCpu ? "vs CPU（" + diffLabel + "）" : "指相撲バトル"}
             </div>
-            <p className="text-red-300 text-sm text-center px-8 mb-6">
+            <p className="text-slate-300 text-sm text-center px-8 mb-6">
               {isCpu
-                ? "画面の下半分をスワイプして\nCPUを土俵の外に押し出せ！"
-                : "2人でスマホを挑んで\n自分の側のエリアをスワイプ！"
+                ? "画面の下半分をスワイプして\nCPUを土俵の外に押し出せ!"
+                : "2人でスマホを囲んで\n自分の側のエリアをスワイプ!"
               }
             </p>
             <button onClick={handleStartRound}
-              className="px-12 py-3 rounded-xl font-black text-white text-lg transition-all active:scale-95 min-h-[44px]"
+              className="px-12 py-3 rounded-xl font-black text-slate-100 text-lg transition-all active:scale-[0.97] min-h-[44px]"
               aria-label="対戦を開始する"
               style={{ background: isCpu ? "linear-gradient(135deg,#7c3aed,#4c1d95)" : "linear-gradient(135deg,#dc2626,#7f1d1d)", boxShadow: isCpu ? "0 0 20px rgba(124,58,237,0.4)" : "0 0 20px rgba(220,38,38,0.4)" }}>
-              対戦開始！
-            </button>
+              対戦開始!</button>
           </div>
         )}
 
         {state.phase === "roundOver" && (
           <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bounce-in"
-            style={{ background: "rgba(0,0,0,0.8)" }}>
+            style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(16px)" }}>
             <img src={state.roundWinner === 1 ? "/images/player1.png" : isCpu ? "/images/cpu.png" : "/images/player2.png"} alt="" className="w-16 h-16 mx-auto mb-3" />
             <div className="text-2xl font-black mb-1" style={{ color: state.roundWinner === 1 ? "#dc2626" : isCpu ? "#a78bfa" : "#3b82f6" }}>
               {isCpu
-                ? (state.roundWinner === 1 ? "あなたの勝ち！" : "CPUの勝ち...")
-                : (state.roundWinner === 1 ? "P1" : "P2") + " の勝ち！"
+                ? (state.roundWinner === 1 ? "あなたの勝ち!" : "CPUの勝ち...")
+                : (state.roundWinner === 1 ? "P1" : "P2") + " の勝ち!"
               }
             </div>
-            <div className="text-white text-lg font-bold mb-4">
+            <div className="text-slate-100 text-lg font-bold mb-4">
               {state.p1Score} - {state.p2Score}
             </div>
             <button onClick={handleStartRound}
-              className="px-10 py-3 rounded-xl font-bold text-white transition-all active:scale-95 min-h-[44px]"
+              className="px-10 py-3 rounded-xl font-bold text-slate-100 transition-all active:scale-[0.97] min-h-[44px]"
               aria-label="次の一番を開始する"
-              style={{ background: "linear-gradient(135deg,#dc2626,#7f1d1d)" }}>
-              次の一番 →
+              style={{ background: "linear-gradient(135deg,#dc2626,#7f1d1d)", boxShadow: "0 0 16px rgba(220,38,38,0.4)" }}>
+              次の一番
             </button>
           </div>
         )}
 
         {state.phase === "matchOver" && (
           <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bounce-in"
-            style={{ background: "rgba(0,0,0,0.85)" }}>
+            style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(16px)" }}>
             {state.winner === 1
               ? <img src="/images/player1.png" alt="" className="w-20 h-20 mx-auto mb-3" style={{ filter: "drop-shadow(0 0 12px gold)" }} />
               : isCpu
@@ -426,13 +425,13 @@ export default function BattleGame() {
             <div className="text-3xl font-black mb-1"
               style={{ color: state.winner === 1 ? "#dc2626" : isCpu ? "#a78bfa" : "#3b82f6" }}>
               {isCpu
-                ? (state.winner === 1 ? "あなたの優勝！" : "CPUの勝ち...")
-                : (state.winner === 1 ? "P1" : "P2") + " 優勝！"
+                ? (state.winner === 1 ? "あなたの優勝!" : "CPUの勝ち...")
+                : (state.winner === 1 ? "P1" : "P2") + " 優勝!"
               }
             </div>
-            {state.winner === 1 && <div className="text-amber-300 text-lg mb-1 font-bold">横綱認定！</div>}
-            {isCpu && state.winner === 2 && <div className="text-purple-300 text-sm mb-1">もう一度挑戦しよう！</div>}
-            <div className="text-white text-xl font-black mb-2">
+            {state.winner === 1 && <div className="text-amber-300 text-lg mb-1 font-bold">横綱認定!</div>}
+            {isCpu && state.winner === 2 && <div className="text-slate-300 text-sm mb-1">もう一度挑戦しよう!</div>}
+            <div className="text-slate-100 text-xl font-black mb-2">
               {state.p1Score} - {state.p2Score}
             </div>
 
@@ -446,15 +445,15 @@ export default function BattleGame() {
 
             <div className="space-y-2 w-48">
               <button onClick={handleStartRound}
-                className="w-full py-3 rounded-xl font-bold text-white text-sm transition-all active:scale-95 min-h-[44px]"
+                className="w-full py-3 rounded-xl font-bold text-slate-100 text-sm transition-all active:scale-[0.97] min-h-[44px]"
                 aria-label="もう一度対戦する"
-                style={{ background: "linear-gradient(135deg,#dc2626,#7f1d1d)" }}>
+                style={{ background: "linear-gradient(135deg,#dc2626,#7f1d1d)", boxShadow: "0 0 16px rgba(220,38,38,0.4)" }}>
                 もう一度対戦
               </button>
               <button onClick={handleResetMatch}
-                className="w-full py-2 rounded-xl font-bold text-sm transition-all active:scale-95 min-h-[44px]"
+                className="w-full py-2 rounded-xl font-bold text-sm transition-all active:scale-[0.97] min-h-[44px]"
                 aria-label="モード選択画面に戻る"
-                style={{ background: "rgba(255,255,255,0.1)", color: "#fca5a5" }}>
+                style={{ background: "rgba(255,255,255,0.03)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.08)", color: "#fca5a5" }}>
                 モード選択に戻る
               </button>
               <a href={shareUrl} target="_blank" rel="noopener noreferrer"
