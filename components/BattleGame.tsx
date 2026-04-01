@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useCallback, useEffect, useState, useMemo } from "react";
+import { motion } from "motion/react";
 import { useSumoPhysics, CpuDifficulty } from "@/hooks/useSumoPhysics";
 import { useGameSounds } from "@/hooks/useGameSounds";
 import { useSumoBGM } from "@/hooks/useSumoBGM";
@@ -125,14 +126,16 @@ function VictoryModal({ winnerLabel, p1Score, p2Score, onRematch, onBack, shareU
       className="fixed inset-0 flex items-center justify-center"
       style={{ zIndex: 300, background: "rgba(0,0,0,0.72)", backdropFilter: "blur(10px)" }}
     >
-      <div
-        className="score-card-in flex flex-col items-center px-10 py-10 rounded-3xl"
+      <motion.div
+        className="glass-game flex flex-col items-center px-10 py-10 rounded-3xl"
         style={{
-          background: "linear-gradient(135deg,#1e1b4b,#312e81)",
           border: "2px solid #FFD93D",
           boxShadow: "0 0 60px rgba(255,217,61,0.5)",
           minWidth: 260,
         }}
+        initial={{ scale: 0.5, opacity: 0, y: 40 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 22 }}
       >
         {/* SVG トロフィー（絵文字なし） */}
         <svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true" className="mb-4 victory-badge-in">
@@ -189,7 +192,7 @@ function VictoryModal({ winnerLabel, p1Score, p2Score, onRematch, onBack, shareU
             Xでシェア
           </a>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
