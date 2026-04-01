@@ -41,6 +41,7 @@ function saveStats(stats: BattleStats) {
 }
 
 const CONFETTI_COLORS = ["#dc2626", "#f59e0b", "#22c55e", "#3b82f6", "#a855f7", "#ec4899", "#fbbf24"];
+const VICTORY_CONFETTI_COLORS = ["#FFD93D", "#6366f1", "#f43f5e", "#22c55e", "#fbbf24", "#a855f7", "#3b82f6"];
 
 function Confetti() {
   const pieces = useMemo(() =>
@@ -74,6 +75,125 @@ function Confetti() {
   );
 }
 
+// 勝利非対称演出: コンフェッティ (15粒)
+function VictoryConfetti() {
+  const pieces = useMemo(() =>
+    Array.from({ length: 15 }, (_, i) => ({
+      id: i,
+      left: 5 + Math.random() * 90,
+      fallDur: (2.4 + Math.random() * 1.4).toFixed(2),
+      fallDelay: (Math.random() * 0.8).toFixed(2),
+      swayDur: (0.9 + Math.random() * 0.6).toFixed(2),
+      color: VICTORY_CONFETTI_COLORS[i % VICTORY_CONFETTI_COLORS.length],
+      w: 7 + Math.floor(Math.random() * 7),
+      h: 5 + Math.floor(Math.random() * 5),
+    })), []);
+
+  return (
+    <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 200 }}>
+      {pieces.map(p => (
+        <div
+          key={p.id}
+          className="victory-confetti-piece"
+          style={{
+            left: `${p.left}%`,
+            width: `${p.w}px`,
+            height: `${p.h}px`,
+            background: p.color,
+            "--fall-dur": `${p.fallDur}s`,
+            "--fall-delay": `${p.fallDelay}s`,
+            "--sway-dur": `${p.swayDur}s`,
+          } as React.CSSProperties}
+        />
+      ))}
+    </div>
+  );
+}
+
+// 勝利モーダル
+interface VictoryModalProps {
+  winnerLabel: string;
+  p1Score: number;
+  p2Score: number;
+  onRematch: () => void;
+  onBack: () => void;
+  shareUrl: string;
+}
+function VictoryModal({ winnerLabel, p1Score, p2Score, onRematch, onBack, shareUrl }: VictoryModalProps) {
+  return (
+    <div
+      className="fixed inset-0 flex items-center justify-center"
+      style={{ zIndex: 300, background: "rgba(0,0,0,0.72)", backdropFilter: "blur(10px)" }}
+    >
+      <div
+        className="score-card-in flex flex-col items-center px-10 py-10 rounded-3xl"
+        style={{
+          background: "linear-gradient(135deg,#1e1b4b,#312e81)",
+          border: "2px solid #FFD93D",
+          boxShadow: "0 0 60px rgba(255,217,61,0.5)",
+          minWidth: 260,
+        }}
+      >
+        {/* SVG トロフィー（絵文字なし） */}
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true" className="mb-4 victory-badge-in">
+          <rect x="24" y="52" width="16" height="6" rx="3" fill="#FFD93D"/>
+          <rect x="18" y="56" width="28" height="5" rx="2.5" fill="#F59E0B"/>
+          <rect x="27" y="44" width="10" height="10" rx="2" fill="#FDE68A"/>
+          <path d="M16 10h32v18c0 8.837-7.163 16-16 16S16 36.837 16 28V10z" fill="#FFD93D"/>
+          <path d="M16 14H8a6 6 0 006 6h2V14z" fill="#F59E0B"/>
+          <path d="M48 14h8a6 6 0 01-6 6h-2V14z" fill="#F59E0B"/>
+          <ellipse cx="32" cy="26" rx="8" ry="6" fill="#FEF3C7" opacity="0.4"/>
+        </svg>
+        <div
+          className="font-black text-center mb-1"
+          style={{ fontSize: 36, color: "#FFD93D", textShadow: "0 0 20px rgba(255,217,61,0.7)" }}
+        >
+          {winnerLabel}
+        </div>
+        <div className="font-black text-5xl text-white mb-1 tabular-nums">
+          {p1Score} - {p2Score}
+        </div>
+        <div className="text-slate-300 text-sm mb-8">最終スコア</div>
+        <div className="flex flex-col gap-3 w-full">
+          <button
+            onClick={onRematch}
+            className="w-full py-4 rounded-2xl font-black text-white text-lg transition-all active:scale-[0.97] min-h-[48px]"
+            aria-label="もう1回勝負する"
+            style={{
+              background: "linear-gradient(135deg,#6366f1CC,#6366f199)",
+              border: "1px solid #6366f188",
+              boxShadow: "0 0 20px #6366f160, 0 4px 16px #6366f140",
+            }}
+          >
+            もう1回勝負
+          </button>
+          <button
+            onClick={onBack}
+            className="w-full py-3 rounded-2xl font-bold text-sm transition-all active:scale-[0.97] min-h-[44px]"
+            aria-label="モード選択に戻る"
+            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", color: "#c7d2fe" }}
+          >
+            モード選択に戻る
+          </button>
+          <a
+            href={shareUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl font-bold text-sm min-h-[44px]"
+            aria-label="Xで結果をシェアする"
+            style={{ background: "#000", color: "#fff", border: "1px solid #333" }}
+          >
+            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden="true">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+            Xでシェア
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const DIFFICULTY_OPTIONS: { key: CpuDifficulty; label: string; desc: string; color: string }[] = [
   { key: "easy",   label: "よわい", desc: "のんびり相撲", color: "#22c55e" },
   { key: "normal", label: "ふつう", desc: "いい勝負！",   color: "#f59e0b" },
@@ -92,6 +212,8 @@ export default function BattleGame() {
   const [cpuDifficulty, setCpuDifficulty] = useState<CpuDifficulty>("normal");
   const [stats, setStats] = useState<BattleStats | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showVictoryConfetti, setShowVictoryConfetti] = useState(false);
+  const [showVictoryModal, setShowVictoryModal] = useState(false);
   const [streakData, setStreakData] = useState<StreakData | null>(null);
 
   // Load stats on mount
@@ -132,6 +254,10 @@ export default function BattleGame() {
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 3000);
       }
+      // 勝利非対称演出
+      setShowVictoryConfetti(true);
+      setShowVictoryModal(true);
+      setTimeout(() => setShowVictoryConfetti(false), 3500);
       // Update streak on match end
       const updated = updateStreak("yubizumo");
       setStreakData(updated);
@@ -146,6 +272,8 @@ export default function BattleGame() {
   }, [resetMatch]);
 
   const handleStartRound = useCallback(() => {
+    setShowVictoryModal(false);
+    setShowVictoryConfetti(false);
     initRound(isCpu ? cpuDifficulty : undefined);
   }, [initRound, isCpu, cpuDifficulty]);
 
@@ -155,6 +283,8 @@ export default function BattleGame() {
     setGameMode("select");
     setIsCpu(false);
     setShowConfetti(false);
+    setShowVictoryModal(false);
+    setShowVictoryConfetti(false);
   }, [resetMatch, stopBGM]);
 
   const handleToggleBGM = useCallback(() => {
@@ -217,6 +347,12 @@ export default function BattleGame() {
   }, [applyImpulse]);
 
   const diffLabel = DIFFICULTY_OPTIONS.find(d => d.key === cpuDifficulty)?.label ?? cpuDifficulty;
+
+  const victoryWinnerLabel = state.winner
+    ? isCpu
+      ? state.winner === 1 ? "あなたの優勝!" : "CPUの勝ち..."
+      : (state.winner === 1 ? "P1" : "P2") + " 優勝!"
+    : "";
 
   const shareText = state.winner
     ? isCpu
@@ -355,6 +491,17 @@ export default function BattleGame() {
 
       <OrbBackground />
       {showConfetti && <Confetti />}
+      {showVictoryConfetti && <VictoryConfetti />}
+      {showVictoryModal && state.phase === "matchOver" && state.winner && (
+        <VictoryModal
+          winnerLabel={victoryWinnerLabel}
+          p1Score={state.p1Score}
+          p2Score={state.p2Score}
+          onRematch={handleStartRound}
+          onBack={handleResetMatch}
+          shareUrl={shareUrl}
+        />
+      )}
 
       <div className="w-full max-w-sm flex items-center justify-between px-3 py-2" style={{ position: "relative", zIndex: 1 }}>
         <button onClick={handleResetMatch} className="text-red-500 text-sm min-h-[44px] px-2" aria-label="モード選択画面に戻る">← モード選択</button>
@@ -450,16 +597,37 @@ export default function BattleGame() {
           </div>
         )}
 
-        {state.phase === "matchOver" && (
+        {state.phase === "matchOver" && !showVictoryModal && (
           <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bounce-in"
             style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(20px)" }}>
+            {/* 勝者金グロー / 敗者モノクロ: 2人対戦時は上下エリアで非対称表示 */}
+            {!isCpu && (
+              <div className="absolute inset-0 flex flex-col pointer-events-none rounded-2xl overflow-hidden">
+                {/* P2エリア（上半分） */}
+                <div
+                  className={`flex-1 rounded-t-2xl transition-all duration-700 ${state.winner === 2 ? "winner-area" : "loser-area"}`}
+                  style={{ minHeight: "50%" }}
+                />
+                {/* P1エリア（下半分） */}
+                <div
+                  className={`flex-1 rounded-b-2xl transition-all duration-700 ${state.winner === 1 ? "winner-area" : "loser-area"}`}
+                  style={{ minHeight: "50%" }}
+                />
+              </div>
+            )}
             <SumoMascot
               pose={state.winner === 1 ? "win" : isCpu ? "lose" : "win"}
               size={100}
-              style={{ marginBottom: 4, filter: state.winner === 1 ? "drop-shadow(0 0 16px gold)" : "opacity(0.7)" }}
+              style={{
+                marginBottom: 4,
+                filter: (isCpu ? state.winner === 1 : true)
+                  ? "drop-shadow(0 0 20px #FFD93D) drop-shadow(0 0 40px rgba(255,217,61,0.5))"
+                  : "grayscale(100%) brightness(0.55)",
+                transition: "filter 0.6s cubic-bezier(0.4,0,0.2,1)",
+              }}
             />
             <div className="text-3xl font-black mb-1"
-              style={{ color: state.winner === 1 ? "#dc2626" : isCpu ? "#a78bfa" : "#3b82f6" }}>
+              style={{ color: state.winner === 1 ? "#FFD93D" : isCpu ? "#a78bfa" : "#3b82f6" }}>
               {isCpu
                 ? (state.winner === 1 ? "あなたの優勝!" : "CPUの勝ち...")
                 : (state.winner === 1 ? "P1" : "P2") + " 優勝!"
@@ -479,12 +647,16 @@ export default function BattleGame() {
               </div>
             )}
 
-            <div className="space-y-2 w-48">
+            <div className="space-y-2 w-48" style={{ position: "relative", zIndex: 2 }}>
               <button onClick={handleStartRound}
                 className="w-full py-3 rounded-xl font-bold text-slate-100 text-sm transition-all active:scale-[0.97] min-h-[44px]"
                 aria-label="もう一度対戦する"
-                style={{ background: "linear-gradient(135deg,#dc2626,#7f1d1d)", boxShadow: "0 0 16px rgba(220,38,38,0.4)" }}>
-                もう一度対戦
+                style={{
+                  background: "linear-gradient(135deg,#6366f1CC,#6366f199)",
+                  border: "1px solid #6366f188",
+                  boxShadow: "0 0 20px #6366f160, 0 4px 16px #6366f140",
+                }}>
+                もう1回勝負
               </button>
               <button onClick={handleResetMatch}
                 className="w-full py-2 rounded-xl font-bold text-sm transition-all active:scale-[0.97] min-h-[44px]"
@@ -496,7 +668,7 @@ export default function BattleGame() {
                 aria-label="Xで対戦結果をシェアする"
                 className="flex items-center justify-center gap-2 w-full py-2 rounded-xl text-sm font-bold min-h-[44px]"
                 style={{ background: "#000", color: "#fff" }}>
-                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden="true">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                 </svg>
                 Xでシェア
