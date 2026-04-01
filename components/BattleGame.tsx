@@ -3,7 +3,10 @@
 import { useRef, useCallback, useEffect, useState, useMemo } from "react";
 import { useSumoPhysics, CpuDifficulty } from "@/hooks/useSumoPhysics";
 import { useGameSounds } from "@/hooks/useGameSounds";
+import { useSumoBGM } from "@/hooks/useSumoBGM";
 import { updateStreak, loadStreak, getStreakMilestoneMessage, type StreakData } from "@/lib/streak";
+import OrbBackground from "@/components/OrbBackground";
+import SumoMascot from "@/components/SumoMascot";
 
 const CANVAS_W = 360;
 const CANVAS_H = 560;
@@ -81,6 +84,8 @@ export default function BattleGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { state, initRound, applyImpulse, resetMatch, p1TouchRef, p2TouchRef } = useSumoPhysics(canvasRef);
   const { playStart, playRoundWin, playMatchWin } = useGameSounds();
+  const { startBGM, stopBGM, setMuted: setBGMMuted } = useSumoBGM();
+  const [isBGMMuted, setIsBGMMuted] = useState(false);
 
   const [gameMode, setGameMode] = useState<GameMode>("select");
   const [isCpu, setIsCpu] = useState(false);
@@ -96,8 +101,14 @@ export default function BattleGame() {
   }, []);
 
   useEffect(() => {
-    if (state.phase === "fighting") playStart();
-  }, [state.phase]);
+    if (state.phase === "fighting") {
+      playStart();
+      startBGM();
+    }
+    if (state.phase === "matchOver") {
+      stopBGM();
+    }
+  }, [state.phase]); // eslint-disable-line
 
   useEffect(() => {
     if (state.phase === "roundOver") playRoundWin();
@@ -140,10 +151,17 @@ export default function BattleGame() {
 
   const handleResetMatch = useCallback(() => {
     resetMatch();
+    stopBGM();
     setGameMode("select");
     setIsCpu(false);
     setShowConfetti(false);
-  }, [resetMatch]);
+  }, [resetMatch, stopBGM]);
+
+  const handleToggleBGM = useCallback(() => {
+    const next = !isBGMMuted;
+    setIsBGMMuted(next);
+    setBGMMuted(next);
+  }, [isBGMMuted, setBGMMuted]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
@@ -216,10 +234,12 @@ export default function BattleGame() {
   // Mode selection screen
   if (gameMode === "select") {
     return (
-      <div className="flex flex-col items-center justify-center min-h-dvh px-4"
-        style={{ background: "linear-gradient(160deg,#1a0505,#3d0f0f)" }}>
-        <img src="/images/player1.png" alt="力士" className="w-24 h-24 mb-4 mx-auto" style={{ filter: "drop-shadow(0 0 20px rgba(220,38,38,0.6))" }} />
-        <h2 className="text-3xl font-black mb-2" style={{ color: "#fca5a5" }}>指相撲バトル</h2>
+      <div className="flex flex-col items-center justify-center min-h-dvh px-4 relative"
+        style={{ background: "linear-gradient(160deg,#1a0505,#2d0808,#1a0505)" }}>
+        <OrbBackground />
+        <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
+        <SumoMascot pose="idle" size={110} style={{ marginBottom: 8, filter: "drop-shadow(0 0 24px rgba(220,38,38,0.5))" }} />
+        <h2 className="text-3xl font-black mb-2" style={{ color: "#fca5a5", textShadow: "0 0 20px rgba(220,38,38,0.5)" }}>指相撲バトル</h2>
         <p className="text-red-400 text-sm mb-8">モードを選んでください</p>
 
         <div className="space-y-4 w-full max-w-xs">
@@ -280,6 +300,7 @@ export default function BattleGame() {
         )}
 
         <a href="/" className="mt-6 text-red-600 text-sm underline min-h-[44px] inline-flex items-center" aria-label="トップページに戻る">トップに戻る</a>
+        </div>
       </div>
     );
   }
@@ -287,10 +308,12 @@ export default function BattleGame() {
   // Difficulty selection screen (CPU mode)
   if (gameMode === "difficulty") {
     return (
-      <div className="flex flex-col items-center justify-center min-h-dvh px-4"
-        style={{ background: "linear-gradient(160deg,#1a0505,#3d0f0f)" }}>
-        <img src="/images/cpu.png" alt="CPU" className="w-20 h-20 mx-auto mb-3" />
-        <h2 className="text-2xl font-black mb-2" style={{ color: "#fca5a5" }}>CPUの強さ</h2>
+      <div className="flex flex-col items-center justify-center min-h-dvh px-4 relative"
+        style={{ background: "linear-gradient(160deg,#1a0505,#2d0808,#1a0505)" }}>
+        <OrbBackground />
+        <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
+        <SumoMascot pose="ready" size={90} style={{ marginBottom: 8, filter: "drop-shadow(0 0 20px rgba(220,38,38,0.5))" }} />
+        <h2 className="text-2xl font-black mb-2" style={{ color: "#fca5a5", textShadow: "0 0 16px rgba(220,38,38,0.4)" }}>CPUの強さ</h2>
         <p className="text-red-400 text-sm mb-8">難易度を選んでください</p>
 
         <div className="space-y-3 w-full max-w-xs">
@@ -320,28 +343,42 @@ export default function BattleGame() {
           aria-label="モード選択画面に戻る">
           戻る
         </button>
+        </div>
       </div>
     );
   }
 
   // Game screen
   return (
-    <div className="flex flex-col items-center min-h-dvh"
-      style={{ background: "linear-gradient(160deg,#1a0505,#3d0f0f)" }}>
+    <div className="flex flex-col items-center min-h-dvh relative"
+      style={{ background: "linear-gradient(160deg,#1a0505,#2d0808,#1a0505)" }}>
 
+      <OrbBackground />
       {showConfetti && <Confetti />}
 
-      <div className="w-full max-w-sm flex items-center justify-between px-3 py-2">
+      <div className="w-full max-w-sm flex items-center justify-between px-3 py-2" style={{ position: "relative", zIndex: 1 }}>
         <button onClick={handleResetMatch} className="text-red-500 text-sm min-h-[44px] px-2" aria-label="モード選択画面に戻る">← モード選択</button>
         <span className="font-black text-lg flex items-center gap-1" style={{ color: "#fca5a5" }}>
           {isCpu ? <><img src="/images/cpu.png" alt="" className="w-6 h-6 inline" /> vs CPU</> : <><img src="/images/player1.png" alt="" className="w-6 h-6 inline" /> YUBIZUMO</>}
         </span>
-        <div className="text-sm text-red-400">
-          {state.p1Score} - {state.p2Score}
+        <div className="flex items-center gap-2">
+          <div className="text-sm text-red-400 font-black tabular-nums">
+            {state.p1Score} - {state.p2Score}
+          </div>
+          <button
+            onClick={handleToggleBGM}
+            className="min-h-[36px] min-w-[36px] flex items-center justify-center rounded-lg"
+            aria-label={isBGMMuted ? "BGMをオンにする" : "BGMをオフにする"}
+            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+            {isBGMMuted
+              ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M11 5L6 9H2v6h4l5 4V5z" fill="#78350f"/><line x1="23" y1="9" x2="17" y2="15" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"/><line x1="17" y1="9" x2="23" y2="15" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"/></svg>
+              : <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M11 5L6 9H2v6h4l5 4V5z" fill="#fca5a5"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="#fca5a5" strokeWidth="2" strokeLinecap="round"/></svg>
+            }
+          </button>
         </div>
       </div>
 
-      <div className="w-full max-w-sm">
+      <div className="w-full max-w-sm" style={{ position: "relative", zIndex: 1 }}>
         <div className="text-center py-1 text-xs font-bold"
           style={{ color: isCpu ? "#a78bfa" : "#60a5fa", transform: isCpu ? "none" : "rotate(180deg)" }}>
           {isCpu ? (
@@ -355,7 +392,7 @@ export default function BattleGame() {
         </div>
       </div>
 
-      <div className="relative w-full max-w-sm flex-1 flex items-center justify-center px-2">
+      <div className="relative w-full max-w-sm flex-1 flex items-center justify-center px-2" style={{ zIndex: 1 }}>
         <canvas
           ref={canvasRef}
           width={CANVAS_W}
@@ -415,13 +452,12 @@ export default function BattleGame() {
 
         {state.phase === "matchOver" && (
           <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bounce-in"
-            style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(16px)" }}>
-            {state.winner === 1
-              ? <img src="/images/player1.png" alt="" className="w-20 h-20 mx-auto mb-3" style={{ filter: "drop-shadow(0 0 12px gold)" }} />
-              : isCpu
-                ? <img src="/images/cpu.png" alt="" className="w-20 h-20 mx-auto mb-3 opacity-60" />
-                : <img src="/images/player2.png" alt="" className="w-20 h-20 mx-auto mb-3" style={{ filter: "drop-shadow(0 0 12px gold)" }} />
-            }
+            style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(20px)" }}>
+            <SumoMascot
+              pose={state.winner === 1 ? "win" : isCpu ? "lose" : "win"}
+              size={100}
+              style={{ marginBottom: 4, filter: state.winner === 1 ? "drop-shadow(0 0 16px gold)" : "opacity(0.7)" }}
+            />
             <div className="text-3xl font-black mb-1"
               style={{ color: state.winner === 1 ? "#dc2626" : isCpu ? "#a78bfa" : "#3b82f6" }}>
               {isCpu
@@ -470,7 +506,7 @@ export default function BattleGame() {
         )}
       </div>
 
-      <div className="w-full max-w-sm pb-2">
+      <div className="w-full max-w-sm pb-2" style={{ position: "relative", zIndex: 1 }}>
         <div className="text-center py-1 text-xs text-red-400 font-bold">
           <span className="inline-flex items-center gap-1"><img src="/images/player1.png" alt="" className="w-4 h-4 inline" /> {isCpu ? "あなた" : "P1"} — ↑方向にスワイプで押す</span>
         </div>
