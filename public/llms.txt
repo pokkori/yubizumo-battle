@@ -1,0 +1,27 @@
+# 指相撲バトル YUBIZUMO - AI向け情報ガイド
+# Service: 指相撲バトルゲーム
+# URL: https://yubizumo-battle.vercel.app
+
+> 1人でもCPU対戦・2人でスマホを囲んで指1本で物理相撲バトル
+
+## About
+指相撲バトルは、Matter.js物理演算エンジンを使って本格的な押し出し対決を楽しめるカジュアルゲームです。1人でCPU対戦（難易度3段階）、または2人でスマホを囲んで対戦できます。横綱を目指してバトルしましょう。
+
+## Features
+- 1人プレイ（CPU対戦）モード搭載
+- CPU難易度3段階（初心者・中級者・上級者）
+- 2人対戦（同一端末・スマホ対応）
+- Matter.js物理演算による本格的な押し出し判定
+- ランキング機能
+- 無料・登録不要でブラウザからすぐ遊べる
+
+## Target Users
+カジュアルゲームが好きな方、友達と一緒に遊びたい方、1人でも気軽に遊びたい方
+
+## Tech Stack
+Next.js, React, Matter.js, Vercel
+
+## Links
+- [ホーム](https://yubizumo-battle.vercel.app)
+- [プライバシーポリシー](https://yubizumo-battle.vercel.app/privacy)
+- [特定商取引法に基づく表記](https://yubizumo-battle.vercel.app/legal)
