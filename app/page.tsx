@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { AdBanner } from "@/components/AdBanner";
 
 function FloatingParticles() {
   return (
@@ -220,6 +221,9 @@ export default function HomePage() {
             </div>
           ))}
         </div>
+
+        {/* Ad Banner */}
+        <AdBanner slot="0000000000" />
 
         {/* Footer */}
         <footer

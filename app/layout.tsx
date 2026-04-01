@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GoogleAdScript } from "@/components/GoogleAdScript";
 import "./globals.css";
 
 const SITE_URL = "https://yubizumo-battle.vercel.app";
@@ -43,7 +44,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <GoogleAdScript />
+      </body>
     </html>
   );
 }
