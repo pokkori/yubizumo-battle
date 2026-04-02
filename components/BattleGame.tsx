@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useCallback, useEffect, useState, useMemo } from "react";
+import { haptics } from "@/utils/haptics";
 import { motion } from "motion/react";
 import { useSumoPhysics, CpuDifficulty } from "@/hooks/useSumoPhysics";
 import { useGameSounds } from "@/hooks/useGameSounds";
@@ -238,6 +239,7 @@ export default function BattleGame() {
   useEffect(() => {
     if (state.phase === "roundOver") playRoundWin();
     if (state.phase === "matchOver") {
+      if (state.winner === 1) { haptics.success(); } else { haptics.error(); }
       playMatchWin();
       // Record stats for CPU mode
       if (isCpu && state.winner) {
@@ -298,6 +300,7 @@ export default function BattleGame() {
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
+    haptics.tap();
     Array.from(e.changedTouches).forEach(touch => {
       const relY = touch.clientY / window.innerHeight;
       if (relY > 0.5) {
